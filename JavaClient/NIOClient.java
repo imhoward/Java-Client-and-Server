@@ -3,6 +3,7 @@ package JavaClient;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.nio.channels.SocketChannel;
 
@@ -22,7 +23,13 @@ public class NIOClient {
                 while (buffer.hasRemaining()) {
                     serverChannel.write(buffer);
                 }
-
+                buffer.clear();
+                var bytesRead = serverChannel.read(buffer);
+                if (bytesRead > 0) {
+                    buffer.flip();
+                    var data = new String(buffer.array(), 0, bytesRead);
+                    System.out.print("SERVER: " + data);
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

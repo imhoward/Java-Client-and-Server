@@ -3,12 +3,16 @@ package JavaServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.util.HashSet;
 
+/**
+ * @param portNumber Port for server to listen on
+ */
 public class NIOServer {
     public void start(final int portNumber) {
         var clients = new HashSet<SocketChannel>();
@@ -46,7 +50,10 @@ public class NIOServer {
                             }
                             buffer.flip();
                             var data = new String(buffer.array(), 0, bytesRead);
-                            System.out.println("DATA: " + data);
+                            System.out.print("DATA: " + data);
+                            while (buffer.hasRemaining()) {
+                                client.write(buffer);
+                            }
                             buffer.clear();
                         } else {
                             throw new RuntimeException("Unknown channel");
