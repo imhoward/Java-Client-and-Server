@@ -10,10 +10,11 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.util.HashSet;
 
-/**
- * @param portNumber Port for server to listen on
- */
 public class NIOServer {
+
+    /**
+     * @param portNumber Port for server to listen on
+     */
     public void start(final int portNumber) {
         var clients = new HashSet<SocketChannel>();
         try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
