@@ -16,6 +16,6 @@ public class ServerMain {
 
 
         NIOServer nioServer = new NIOServer();
-        nioServer.start(12345);
+        nioServer.start(conf.getPort());
     }
 }

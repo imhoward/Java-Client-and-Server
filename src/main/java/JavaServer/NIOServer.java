@@ -16,6 +16,14 @@ public class NIOServer {
      * @param portNumber Port for server to listen on
      */
     public void start(final int portNumber) {
+        String html = "<html><head><title>Java Server</title></head><body>This page was served using " +
+                "my Java NIO HTTP server</body></html>";
+        String response = "HTTP/1.1 200 OK\r\n" +                       // HTTP version response code
+                "Content-Type: text/html; charset=utf-8\r\n" +
+                "Content-Length: " + html.getBytes().length + "\r\n" +  // header
+                "\r\n" +
+                html
+                + "\r\n" + "\r\n";
         var clients = new HashSet<SocketChannel>();
         try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
              Selector selector = Selector.open()) {
@@ -29,6 +37,7 @@ public class NIOServer {
                     continue;
                 }
                 for (var key : selector.selectedKeys()) {
+                    // Accept connections
                     if (key.isAcceptable()) {
                         if (key.channel() instanceof ServerSocketChannel channel) {
                             var client = channel.accept();
@@ -40,25 +49,18 @@ public class NIOServer {
                             clients.add(client);
                         }
                     } else if (key.isReadable()) {
+                        // If key is readable, read from buffer
                         if (key.channel() instanceof SocketChannel client) {
-                            var bytesRead = client.read(buffer);
-                            if (bytesRead == -1) {
-                                var socket = client.socket();
-                                var clientInfo = socket.getInetAddress().getHostAddress() + ':' + socket.getPort();
-                                System.out.println("Disconnected: " + clientInfo);
-                                client.close();
-                                clients.remove(client);
-                            }
+                            buffer.clear();
+                            buffer.put(response.getBytes(), 0, response.length());
                             buffer.flip();
-                            var data = new String(buffer.array(), 0, bytesRead);
-                            System.out.print("DATA: " + data);
-                            while (buffer.hasRemaining()) {
-                                client.write(buffer);
-                            }
+                            client.write(buffer);
                             buffer.clear();
                         } else {
                             throw new RuntimeException("Unknown channel");
                         }
+                        client.close();
+                        clients.remove(client);
                     }
                 }
                 selector.selectedKeys().clear();

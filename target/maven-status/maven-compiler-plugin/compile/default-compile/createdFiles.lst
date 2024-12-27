@@ -1,0 +1,8 @@
+JavaServer/config/ConfigurationManager.class
+JavaServer/ServerMain.class
+JavaServer/config/HttpConfigurationException.class
+JavaServer/config/Configuration.class
+JavaServer/util/Json.class
+JavaClient/NIOClient.class
+JavaClient/ClientMain.class
+JavaServer/NIOServer.class
