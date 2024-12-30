@@ -49,8 +49,12 @@ public class NIOServer {
                             clients.add(client);
                         }
                     } else if (key.isReadable()) {
-                        // If key is readable, read from buffer
                         if (key.channel() instanceof SocketChannel client) {
+                            client.read(buffer);
+                            String clientResponse = new String(buffer.array());
+                            System.out.println(clientResponse);
+                            buffer.flip();
+
                             buffer.clear();
                             buffer.put(response.getBytes(), 0, response.length());
                             buffer.flip();
@@ -62,7 +66,9 @@ public class NIOServer {
                         client.close();
                         clients.remove(client);
                     }
+
                 }
+
                 selector.selectedKeys().clear();
             }
 
